@@ -4,7 +4,7 @@ import { Tabs } from './components/Tabs'
 import { ToDoList } from './components/ToDoList'
 import { ToDoInput } from './components/ToDoInput'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
   const [todos, setTodos] = useState([{ input: 'Hello! Add your first todo!', complete: true }])
@@ -14,6 +14,7 @@ function App() {
   function handleAddTodo(newTodo){
     const newTodoList = [...todos, { input: newTodo, complete: false }]
     setTodos(newTodoList)
+    handleSaveData(newTodoList)
   }
 
   function handleCompleteTodo(index){
@@ -22,12 +23,26 @@ function App() {
     completedTodo.complete = true
     newTodos[index] = completedTodo
     setTodos(newTodos)
+    handleSaveData(newTodos)
   }
 
   function handleDeleteTodo(index){
     let newTodoList = todos.filter((val, valIndex) => { return valIndex != index })
     setTodos(newTodoList)
+    handleSaveData(newTodoList)
   }
+
+  function handleSaveData(currTodos) {
+    localStorage.setItem('todo-app', JSON.stringify({ todos: currTodos }))
+  }
+
+  useEffect(() => {
+    if (!localStorage || !localStorage.getItem('todo-app')) { return }
+    let db = JSON.parse(localStorage.getItem('todo-app'))
+    setTodos(db.todos)
+  }, [])
+
+  
   
   return (
     <>
